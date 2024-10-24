@@ -8,10 +8,15 @@
     <recommend-view :recommends="recommends"/>
     <feature-view/>
     <!-- 此处无法省略: 因为这样就不能识别为数组 而是一个普通的字符串了 -->
-    <!-- 而且在Car1模块中的该组件存在个性化需求 即当未达到指定位置时 position为static 而达到指定位置以后 position则为fixed 即固定不动 -->
-    <tab-control class="tab-control" :titles="['流行', '新款', '精选']"/>
-    <!-- 展示商品 -->
-    <goods-list :goods="goods['pop'].list"/>
+    <!-- 而且在Car1模块中的该组件存在个性化需求 即当未达到指定位置时 position为static 而达到指定位置以后 position则为fixed 即固定不动 同时 子传父可以省略参数传递 直接使用载荷传递 -->
+    <tab-control class="tab-control" :titles="['流行', '新款', '精选']" @tabClick="tabClick"/>
+    <!-- 展示商品 但是现在是固定传递某个类型的商品 并没有根据类型的不同而展示不同的商品 因此的话 我们需要根据用户在tabcontrol的点击事件来动态决定所展示的内容 -->
+<!--    <goods-list :goods="goods['pop'].list"/>-->
+    <!-- 有currentType动态决定当前所要展示的内容 -->
+<!--    <goods-list :goods="goods[this.currentType].list"></goods-list>-->
+    <goods-list :goods="showGoods"></goods-list>
+    <!-- 你会觉得上述写法中goods的索引太长了 完全可以抽取为一个变量 并且抽取为计算属性 因为计算属性的好处在于他存在缓存机制 -->
+
     <!-- 此外 我们的部分特性商品无法展示出来 我们可以在其下方设置一些占位数据 用于帮助我们显式所有的特性商品 -->
     <ul>
       <li>列表1</li>
@@ -159,7 +164,9 @@
           'pop': {page: 0, list: []},
           'new': {page: 0, list: []},
           'sell': {page: 0, list: []}
-        }
+        },
+        // 由于goods是通过字符串获取元素的 因此的话 我们需要通过变量保存当前状态下的类型 并且通过当前点击的类型索引来更新当前状态下的类型
+        currentType: 'pop'
       }
     },
     // 获取数据的时机发生在组件创建完毕之后
@@ -173,6 +180,22 @@
       this.getHomeGoods("sell")
     },
     methods: {
+      // 用于处理监听事件的方法
+      tabClick(index) {
+        // 根据不同的索引来更新不同的类型
+        switch(index) {
+          case 0:
+            this.currentType = 'pop'
+            break
+          case 1:
+            this.currentType = 'new'
+            break
+          case 2:
+            this.currentType = 'sell'
+            break
+        }
+      },
+      // 用于处理网络请求的方法
       getMultidata() {
         getMultidata().then(res => {
           // 由于该数据在函数内部 即位局部变量 他的生命周期和函数的生命周期挂钩 为了让其在组件生命周期内保存 因此我们需要将其保存在和组件生命周期挂钩的data中
@@ -192,6 +215,11 @@
           // 更新当前模块记录的页码
           this.goods[type].page = page;
         })
+      }
+    },
+    computed: {
+      showGoods() {
+        return this.goods[this.currentType].list
       }
     }
   }
@@ -223,6 +251,8 @@
   .tab-control {
     position: sticky;
     /* 还需要设置固定不动的位置 即距离上边距44px 相当于一个导航栏的高度 */
-    top: 44px
+    top: 44px;
+    /* 设置他的优先级 防止被后面的元素所覆盖 */
+    z-index: 9;
   }
 </style>

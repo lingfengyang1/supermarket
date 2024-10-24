@@ -1,9 +1,13 @@
 <template>
-  <div>
+  <div class="goods-item">
     <img :src="goodsItem.show.img" alt="你好">
-    <p>{{goodsItem.title}}</p>
-    <span>{{goodsItem.price}}</span>
-    <span>{{goodsItem.cfav}}</span>
+
+    <div class="goods-info">
+      <p>{{goodsItem.title}}</p>
+      <span class="price">{{goodsItem.price}}</span>
+      <span class="collect">{{goodsItem.cfav}}</span>
+    </div>
+
   </div>
 </template>
 
@@ -25,7 +29,7 @@
   .goods-item {
     padding-bottom: 40px;
     position: relative;
-
+    /* 为了在一行中仅仅显式两个item组件的话 并且适配所有的设备 我们通过百分比的形式来为宽度赋值 */
     width: 48%;
   }
 
