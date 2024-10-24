@@ -10,6 +10,8 @@
     <!-- 此处无法省略: 因为这样就不能识别为数组 而是一个普通的字符串了 -->
     <!-- 而且在Car1模块中的该组件存在个性化需求 即当未达到指定位置时 position为static 而达到指定位置以后 position则为fixed 即固定不动 -->
     <tab-control class="tab-control" :titles="['流行', '新款', '精选']"/>
+    <!-- 展示商品 -->
+    <goods-list :goods="goods['pop'].list"/>
     <!-- 此外 我们的部分特性商品无法展示出来 我们可以在其下方设置一些占位数据 用于帮助我们显式所有的特性商品 -->
     <ul>
       <li>列表1</li>
@@ -121,6 +123,7 @@
   // 一般的话 我们会按照公共组件/子组件/函数的分类方式分别导入这些组件 并且在注册组件时 也会按照导入的顺序进行 并且不同的类别之间会以空格隔开
   import NavBar from 'components/common/navbar/NavBar'
   import TabControl from 'components/content/tabControl/TabControl'
+  import GoodsList from 'components/content/goods/GoodsList'
 
   // 将组件的导入写在一起 函数的导入写在一起 这样才方便观察
   import HomeSwiper from './childComps/HomeSwiper'
@@ -139,6 +142,7 @@
     components: {
       NavBar,
       TabControl,
+      GoodsList,
 
       HomeSwiper,
       RecommendView,
@@ -208,7 +212,7 @@
     right: 0;
     top: 0;
     /* 光设置固定还不够 我们发现 导航栏被其他页面给覆盖了 因此的话 我们需要设置堆叠值 用于堆叠在其他页面之上 */
-    z-index: 10;
+    z-index: 9;
   }
   /* 由于导航栏已经不在遵循默认的文档流 所以说 他会覆盖默认文档流的页面 因此的话 文档流应当和他之间设置距离 */
   #home {
