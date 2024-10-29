@@ -5,7 +5,7 @@ export function request(config) {
   const instance = axios.create({
     // 定义公共的配置
     // 定义基路径
-    baseURL: 'http://123.207.32.32:8000/',
+    baseURL: 'http://123.207.32.32:8000',
     // 定义超时时间
     timeout: 5000
   })
@@ -22,7 +22,7 @@ export function request(config) {
 export function mockRequest(config) {
   const instance = axios.create({
     baseURL: 'https://httpbin.org',
-    timeout: 10000
+    timeout: 1000000
   })
   instance.interceptors.request.use(
     config => {

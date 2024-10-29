@@ -13,6 +13,7 @@
     props: {
       titles: {
         type: Array,
+        // 当默认值为数组或者对象时 default属性必须为函数才行
         default() {
           return []
         }
