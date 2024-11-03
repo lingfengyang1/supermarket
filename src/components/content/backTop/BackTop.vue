@@ -16,7 +16,7 @@
     /* 在整个业务中 该按钮的位置统一都是滚动区域的右下角 并且是固定的 */
     position: fixed;
     right: 5px;
-    bottom: 50px;
+    bottom: 60px;
   }
   .backTop img {
     /* 缩小一下图片的大小 */

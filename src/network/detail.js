@@ -1989,6 +1989,8 @@ export class Goods {
     this.columns = columns;
     // 获取services
     this.services = services;
+    // 设置一个真实的价格 用于在购物车中进行展示 这里我们选取lowNowPrice作为我们真实价格的值
+    this.realPrice = itemInfo.lowNowPrice;
   }
 }
 // 如果我们要展示店铺信息的话 所需要的真正有用的属性并非整个res 而是需要筛选以后封装到一个类中 现在我们就定义一个店铺类 内置一些店铺有关的属性

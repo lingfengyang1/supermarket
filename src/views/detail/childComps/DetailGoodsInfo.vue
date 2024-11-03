@@ -40,10 +40,12 @@ export default {
   methods: {
     goodsInfoImgLoad(){
       // 当图片个数加载到指定数量时 才会发送自定义事件 如果不加判断的话 那么就会频繁的发送自定义事件 这样对于性能的消耗无疑是巨大的
-      if(++this.counter === this.imgLength){
-        // 这样只会进行一次自定义事件的发送
-        this.$emit("goodsInfoImgLoad");
-      }
+      // if(++this.counter === this.imgLength){
+      //   // 这样只会进行一次自定义事件的发送
+      //   this.$emit("goodsInfoImgLoad");
+      // }
+      // 如果你执意要发送多个自定义事件的话 那么你可以在接收端设置防抖函数节约性能
+      this.$emit("goodsInfoImgLoad");
     }
   },
   watch: {

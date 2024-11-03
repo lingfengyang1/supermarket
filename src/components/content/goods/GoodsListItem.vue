@@ -1,8 +1,8 @@
 <template>
   <!-- 每一个item组件都需要监听点击事件 然后跳转到对应的详情页 所以说 我们在跳转的同时还要携带每一个商品的iid 这样子跳转以后才可以根据每一个商品的iid发送具体的网络请求 获取对应各自商品的详情 并展示到每一个详情页中 -->
   <div class="goods-item" @click="itemClick">
-    <img :src="showImage" alt="你好" @load="imgLoad">
-
+<!--    <img :src="showImage" alt="你好" @load="imgLoad">-->
+    <img v-lazy="showImage" @load="imgLoad">
     <div class="goods-info">
       <p>{{goodsItem.title}}</p>
       <span class="price">{{goodsItem.price}}</span>

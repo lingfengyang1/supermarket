@@ -29,6 +29,8 @@
       itemClick(index) {
         // 需要动态更新活跃状态的小组件
         this.currentIndex = index
+        // 除了说更新当前处于活跃状态的按钮索引以外 我们还需要发送自定义事件供父组件截取
+        this.$emit('detailItemClick', index)
       },
       goBack() {
         // 完成回退页面的操作

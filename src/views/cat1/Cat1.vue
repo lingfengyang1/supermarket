@@ -27,7 +27,7 @@
     <!-- 回到顶部的按钮肯定不属于滚动区域 而是独立于滚动区域 因此的话 在此设置回到顶部按钮 -->
     <!-- 如果我想要触发点击事件 对于组件而言 是不能够直接监听点击的 而是需要追加修饰符.native就可以实现对组件的点击监听了 -->
     <!-- 现在在实现组件监听点击的基础上 要进一步设计监听点击的逻辑 即调用BScroll对象的scrollTo(0, 0, 作用时间)就可以完成回到顶部的操作 但是就需要获取第三方框架封装层中的BScroll对象了 这点通过父访问子的方式即可实现 -->
-    <back-top @click.native="backClick" v-show="this.isShowBacktop"/>
+    <back-top @click.native="backClick" v-show="isShowBacktop"/>
   </div>
 
 </template>
@@ -38,7 +38,7 @@
   import TabControl from 'components/content/tabControl/TabControl'
   import GoodsList from 'components/content/goods/GoodsList'
   import Scroll from 'components/common/scroll/Scroll'
-  import BackTop from 'components/content/backTop/BackTop'
+  // import BackTop from 'components/content/backTop/BackTop'
 
   // 将组件的导入写在一起 函数的导入写在一起 这样才方便观察
   import HomeSwiper from './childComps/HomeSwiper'
@@ -53,7 +53,7 @@
   // import {getHomeGoods} from 'network/cat1'
   import {getMultidata, getHomeGoods} from "network/cat1";
   // import {debounce} from 'common/utils'
-  import {itemListenerMixin} from 'common/mixin'
+  import {itemListenerMixin, backTopMixin} from 'common/mixin'
   export default {
     name: "Cat1",
     components: {
@@ -61,7 +61,7 @@
       TabControl,
       GoodsList,
       Scroll,
-      BackTop,
+      // BackTop,
 
       HomeSwiper,
       RecommendView,
@@ -82,7 +82,7 @@
         // 由于goods是通过字符串获取元素的 因此的话 我们需要通过变量保存当前状态下的类型 并且通过当前点击的类型索引来更新当前状态下的类型
         currentType: 'pop',
         // 是否隐藏回到顶部按钮肯定是动态决定 由是否超出某个临界值动态决定的 默认肯定是不会显示的
-        isShowBacktop: false,
+        // isShowBacktop: false,
         tabOffsetTop: 0,
         isFixed: false,// 通过该变量动态决定tab-control是否要吸顶 默认肯定是不会吸顶
         // 定义一个变量 用于记录每一个组件最后状态的位置
@@ -90,7 +90,7 @@
         // itemImageListener: null
       }
     },
-    mixins: [itemListenerMixin],
+    mixins: [itemListenerMixin, backTopMixin],
     // 获取数据的时机发生在组件创建完毕之后
     created() {
       // 我们的生命周期方法只需要关注网络请求的发送即可 至于说网络请求具体如何发送的 这不在关注的范围之内 因此的话 我们应该将具体逻辑抽取到函数中以供调用
@@ -105,6 +105,10 @@
       // this.$bus.$on('imageLoad', () => {
       //   this.$refs.scroll.refresh()
       // })
+      // 一开始 我们默认让两个tabControl都选中索引为0的选项即可 但实际上 我们并不需要传递任何参数 因为默认情况下currentIndex记录的值为0 而他表达的是当前处于活跃状态下的按钮 因此的话 一开始没有任何点击事件的情况下 每一个tabControl都默认选中第一个按钮 并且他们的currentType默认取值为pop
+      // 这里我们通常会手动选择索引为0的按钮 使得第一个按钮处于活跃样式 但是其实方法调用中 存在created生命周期方法访问dom元素的行为 这种行为是不被允许的 因此的话 我们需要根据不同的条件判断该行为是否执行
+      // 或者说 如果你不想要初始的受按钮点击行为定义于此并且需要判断dom元素是否为空来决定代码是否执行的话 你也可以将初始点击行为定义于counted中 这样就不会出现dom元素未定义的情况 也就不需要分类讨论来决定是否需要执行tabClick逻辑中的部分代码了
+      this.tabClick(0);
     },
     // 如果没有通过keep-alive包裹当前组件的话 那么确实会频繁的创建和销毁 而当keep-alive包裹当前组件时 就会将当前组件的生命周期和vue的生命周期挂钩
     // destroyed() {
@@ -138,7 +142,7 @@
     //   // console.log(this.$refs.tabControl.$el.offsetTop);
     // },
     mounted() {
-
+      // this.tabClick(0);
     },
     methods: {
       // 用于处理监听事件的方法
@@ -156,15 +160,19 @@
             break
         }
         // 现在在主页中 存在着两个tab-control组件 我们必须要保证两者中处于活跃状态的按钮统一 因此我们需要重置两个组件的currentIndex属性
-        this.$refs.tabControl1.currentIndex = index;
-        this.$refs.tabControl2.currentIndex = index;
+        // 由于created方法中访问了以下tabControl1/tabControl2所指向的dom元素 所以说 无法成功访问 但是tabClick方法的调用不仅仅局限于created中 也可能是其他时机 所以说 我们需要分情况讨论是否执行以下的代码 如果dom元素还未定义 即created方法中调用的tabClick方法 那么我们就不需要执行以下代码 反之就需要执行以下代码
+        // 而且由于在created方法中 tabControl1/tabControl2肯定都还未生成相应的dom元素 因此的话 我们只需要判断其中一个dom元素是否未定义就可知以下代码是否需要执行
+        if(this.$refs.tabControl1 !== undefined) {
+          this.$refs.tabControl1.currentIndex = index;
+          this.$refs.tabControl2.currentIndex = index;
+        }
       },
-      backClick() {
-        // console.log('I am come back');
-        // 但是为了良好的封装性 不具体关心内部如何实现的 我们应该将其封装以供调用
-        // this.$refs.scroll.scroll.scrollTo(0, 0);
-        this.$refs.scroll.scrollTo(0, 0, 500)
-      },
+      // backClick() {
+      //   // console.log('I am come back');
+      //   // 但是为了良好的封装性 不具体关心内部如何实现的 我们应该将其封装以供调用
+      //   // this.$refs.scroll.scroll.scrollTo(0, 0);
+      //   this.$refs.scroll.scrollTo(0, 0, 500)
+      // },
       contentScroll(position) {
         // 动态决定回到顶部按钮是否需要显示
         this.isShowBacktop = (-position.y) > 1000
